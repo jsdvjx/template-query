@@ -1,0 +1,53 @@
+import { Observable, of, from } from "rxjs";
+import { Maker } from "./maker";
+import * as makers from './maker'
+export interface QueryResultOption {
+    multiple: boolean
+    auto: boolean
+    pick?: string
+    type: any
+}
+export interface QueryTemplate<P = any, R = any> {
+    template: string;
+    name: string;
+    tag: string;
+    maker: string;
+    result: QueryResultOption;
+    resultType: R;
+}
+export interface Querist {
+    query: <R = any>(sql: string) => Promise<R>
+}
+
+export interface QueryConfig {
+    path: {
+        maker: string;
+        query: string;
+    }
+    templates: QueryTemplate[];
+    include_templates: string[]
+}
+export default class QueristMgr {
+    private static queristMap: Map<string, Querist> = new Map;
+    static register = (name: string, querist: Querist) => {
+        QueristMgr.queristMap.set(name, querist)
+    }
+    static set = QueristMgr.register
+    static get = (name: string) => {
+        return QueristMgr.queristMap.get(name)
+    }
+    static has = (name: string) => {
+        return QueristMgr.queristMap.has(name)
+    }
+    static delete = (name: string) => {
+        return QueristMgr.queristMap.delete(name)
+    }
+}
+type Query<R, P = any> = (params: P) => Observable<R>
+export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, queristName: string) => {
+    return (param: P): Observable<R> => {
+        return QueristMgr.has(queristName) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)
+    };
+}
+type PType<T> = T extends (p: infer P) => any ? P : any
+/*{#template_included#}*/

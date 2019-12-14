@@ -1,0 +1,4 @@
+name: sync
+template: SELECT * FROM {table} WHERE {version_field} >= '{version_value}' ORDER BY {version_field} ASC LIMIT {take}
+result:
+    any: true

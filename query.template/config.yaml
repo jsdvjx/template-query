@@ -1,0 +1,19 @@
+templates:
+  - name: sync
+    template: SELECT * FROM {table} WHERE {version_field} >= '{version_value}' ORDER BY {version_field} ASC LIMIT {take}
+    tag: bigdata
+    result:
+      multiple: true
+      any: true
+      auto: false
+  - name: syncCount
+    template: SELECT count(0) count FROM {table} WHERE {version_field} >= '{version_value}'
+    result:
+      multiple: false
+      pick: count
+path:
+  maker: ../src/auto.code/maker.ts
+  query: ../src/auto.code/queries.ts
+include_templates:
+  - ./
+  - ./client/

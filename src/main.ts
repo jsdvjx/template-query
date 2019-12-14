@@ -1,0 +1,1 @@
+import { resolve } from './auto.code/resolve'
