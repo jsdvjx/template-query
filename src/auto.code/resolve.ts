@@ -54,7 +54,7 @@ const findYamlPath = curry((file: string, path: string[]) =>
     compose(flatMap(_ => _ as string[]),
         map((s: string) => filter((p: string) => isYaml(p) && p != ph.resolve(file))(readFullPath(ph.resolve(ph.dirname(file), s)))))(path));
 const genFun = (template: QueryTemplate) => {
-    return `export const ${template.name}Query = QueryBuilder(makers.${template.maker},'${template.tag}');`
+    return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple?'[]':''},makers.${template.name}SqlMakerParam>(makers.${template.maker},'${template.tag}',${JSON.stringify(template.result).replace(/\"/, '')});`
 }
 const genCode = compose(join('\n'), map(genFun));
 const build = ([makerPath, queryPath]: [string, string], templates: QueryTemplate[]) => {

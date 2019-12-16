@@ -1,1 +1,1 @@
-import { resolve } from './auto.code/resolve'
+console.log(JSON.stringify({ test: 123 }).replace(/\"/g, ''))
