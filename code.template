@@ -1,7 +1,7 @@
 import { Observable, of, from } from "rxjs";
 import { Maker } from "./maker";
 import * as makers from './maker'
-import { first,curryRight } from 'lodash/fp'
+import { first,curry } from 'lodash/fp'
 import { map } from "rxjs/operators";
 export interface Querist {
     query: <R = any>(sql: string) => Promise<R>
@@ -30,7 +30,7 @@ export interface QueryResultOption {
     pick?: string
     type: any
 }
-export const QueryComplie = <R = any>(list: R[], option: QueryResultOption) => {
+export const QueryComplie = <R = any>( option: QueryResultOption , list: R[]) => {
     if (!list) return null;
     const result = option.multiple ? list : first(list);
     if (typeof option.pick === 'string' && option.pick.length > 0) {
@@ -51,7 +51,7 @@ export const QueryComplie = <R = any>(list: R[], option: QueryResultOption) => {
 }
 type Query<R, P = any> = (params: P) => Observable<R>
 export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, queristName: string, option?: QueryResultOption) => {
-    const handler = option ? curryRight(QueryComplie)(option):(_:any)=>_;
+    const handler = option ? curry(QueryComplie)(option):(_:any)=>_;
     return (param: P): Observable<R> => {
         return (QueristMgr.has(queristName) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)).pipe(map(handler))
     };
