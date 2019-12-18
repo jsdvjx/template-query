@@ -53,7 +53,7 @@ type Query<R, P = any> = (params: P) => Observable<R>
 export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, queristName: string, option?: QueryResultOption) => {
     const handler = option ? curryRight(QueryComplie)(option):(_:any)=>_;
     return (param: P): Observable<R> => {
-        return (QueristMgr.has(name) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)).pipe(map(handler))
+        return (QueristMgr.has(queristName) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)).pipe(map(handler))
     };
 }
 /*{#template_included#}*/
