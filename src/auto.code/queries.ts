@@ -1,7 +1,7 @@
 import { Observable, of, from } from "rxjs";
 import { Maker } from "./maker";
 import * as makers from './maker'
-import { first,curryRight } from 'lodash/fp'
+import { first, curry } from 'lodash/fp'
 import { map } from "rxjs/operators";
 export interface Querist {
     query: <R = any>(sql: string) => Promise<R>
@@ -50,14 +50,12 @@ export const QueryComplie = <R = any>(list: R[], option: QueryResultOption) => {
     return result;
 }
 type Query<R, P = any> = (params: P) => Observable<R>
-export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, queristName: string, option?: QueryResultOption) => {
-    const handler = option ? curryRight(QueryComplie)(option):(_:any)=>_;
-    return (param: P): Observable<R> => {
-        return (QueristMgr.has(name) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)).pipe(map(handler))
+export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, option?: QueryResultOption, baseName?: string) => {
+    const handler = option ? curry(QueryComplie)(option) : (_: any) => _;
+    return (param: P, queristName?: string): Observable<R> => {
+        const name = queristName || baseName;
+        return (QueristMgr.has(name) ? from(QueristMgr.get(name).query((maker as any)(param))) : of(null)).pipe(map(handler))
     };
 }
 /*{#template_included#}*/
 
-export const syncQuery = QueryBuilder(makers.syncSqlMaker, 'bigdata');
-export const syncCountQuery = QueryBuilder(makers.syncCountSqlMaker, 'default');
-export const syncTestQuery = QueryBuilder(makers.syncTestSqlMaker, 'default');

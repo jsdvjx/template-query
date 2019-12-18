@@ -57,7 +57,7 @@ const genFun = (template: QueryTemplate) => {
     const temp=`{${ Object.entries(template.result).map(([k, v]) => {
         return `${k}:${typeof v === 'string' ? `'${v}'` : v}`
     }).join(',')}}`
-    return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple ? '[]' : ''},makers.${upperFirst(template.name)}SqlMakerParam>(makers.${template.maker},'${template.tag}',${temp});`
+    return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple ? '[]' : ''},makers.${upperFirst(template.name)}SqlMakerParam>(makers.${template.maker},${temp},'${template.tag}');`
 }
 const genCode = compose(join('\n'), map(genFun));
 const build = ([makerPath, queryPath]: [string, string], templates: QueryTemplate[]) => {
