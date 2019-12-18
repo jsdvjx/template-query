@@ -1,9 +1,13 @@
 import { Observable, of, from } from "rxjs";
 import { Maker } from "./maker";
 import * as makers from './maker'
-import { Querist } from "./resolve";
 import { first,curryRight } from 'lodash/fp'
 import { map } from "rxjs/operators";
+export interface Querist {
+    query: <R = any>(sql: string) => Promise<R>
+}
+
+
 export default class QueristMgr {
     private static queristMap: Map<string, Querist> = new Map;
     static register = (name: string, querist: Querist) => {
@@ -52,7 +56,6 @@ export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, queristName: str
         return (QueristMgr.has(name) ? from(QueristMgr.get(queristName).query((maker as any)(param))) : of(null)).pipe(map(handler))
     };
 }
-type PType<T> = T extends (p: infer P) => any ? P : any
 /*{#template_included#}*/
 
 export const syncQuery = QueryBuilder(makers.syncSqlMaker, 'bigdata');

@@ -1,6 +1,6 @@
 import * as yaml from 'yamljs'
 import { coder } from 'string2fun'
-import { compose, map, filter, curry, flatMap } from 'lodash/fp'
+import { compose, map, filter, curry, flatMap, upperFirst } from 'lodash/fp'
 import { uniqBy } from 'lodash'
 import * as ph from 'path'
 import * as fs from 'fs'
@@ -54,7 +54,10 @@ const findYamlPath = curry((file: string, path: string[]) =>
     compose(flatMap(_ => _ as string[]),
         map((s: string) => filter((p: string) => isYaml(p) && p != ph.resolve(file))(readFullPath(ph.resolve(ph.dirname(file), s)))))(path));
 const genFun = (template: QueryTemplate) => {
-    return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple?'[]':''},makers.${template.name}SqlMakerParam>(makers.${template.maker},'${template.tag}',${JSON.stringify(template.result).replace(/\"/, '')});`
+    const temp=`{${ Object.entries(template.result).map(([k, v]) => {
+        return `${k}:${typeof v === 'string' ? `'${v}'` : v}`
+    }).join(',')}}`
+    return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple ? '[]' : ''},makers.${upperFirst(template.name)}SqlMakerParam>(makers.${template.maker},'${template.tag}',${temp});`
 }
 const genCode = compose(join('\n'), map(genFun));
 const build = ([makerPath, queryPath]: [string, string], templates: QueryTemplate[]) => {
