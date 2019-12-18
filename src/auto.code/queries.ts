@@ -30,7 +30,7 @@ export interface QueryResultOption {
     pick?: string
     type: any
 }
-export const QueryComplie = <R = any>(list: R[], option: QueryResultOption) => {
+export const QueryComplie = <R = any>( option: QueryResultOption,list: R[]) => {
     if (!list) return null;
     const result = option.multiple ? list : first(list);
     if (typeof option.pick === 'string' && option.pick.length > 0) {
