@@ -6192,10 +6192,10 @@ string.prototype.trimright@^2.0.0, string.prototype.trimright@^2.1.0:
     define-properties "^1.1.3"
     function-bind "^1.1.1"
 
-string2fun@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/string2fun/-/string2fun-0.1.3.tgz#76367b86ef283297af45c08db3728903bbda5092"
-  integrity sha512-k9fR5IfRDuqPuw26DP27T0BS3ff6Jhb6riZLuVRYsWhx2J9M116vjoZ5BFHwetFjEbmRLzi8lT3eTslmsXC0YQ==
+string2fun@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/string2fun/-/string2fun-0.1.4.tgz#4afea00e3bdd8cbcdb76ec72385a636e528f4848"
+  integrity sha512-dYXyX1AeJCNKGVGOAa/JxGeFup1C/j2tjmNWblFEVWfOvFqtWbYs3vvjwv5tnMu04YxzRS2oJLMDaAtKcSOuCg==
   dependencies:
     "@types/lodash" "^4.14.149"
     axios "^0.19.0"
