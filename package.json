@@ -1,6 +1,6 @@
 {
   "name": "template-query",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3",
-    "string2fun": "^0.1.4",
+    "string2fun": "^0.1.6",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
