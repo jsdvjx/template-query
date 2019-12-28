@@ -12,6 +12,7 @@ export interface QueryResultOption {
     auto: boolean
     pick?: string
     type: any
+    transaction: boolean
 }
 export interface QueryTemplate<P = any, R = any> {
     template: string;
@@ -39,7 +40,8 @@ const queryTemplateComplie = (template: Partial<QueryTemplate>) => {
             auto: template?.result?.auto ?? false,
             multiple: template?.result?.multiple ?? true,
             pick: template?.result?.pick ?? null,
-            type: template?.result?.type ?? 'any'
+            type: template?.result?.type ?? 'any',
+            transaction: template?.result?.transaction ?? false
         }
     } as QueryTemplate;
 }
@@ -54,7 +56,7 @@ const findYamlPath = curry((file: string, path: string[]) =>
     compose(flatMap(_ => _ as string[]),
         map((s: string) => filter((p: string) => isYaml(p) && p != ph.resolve(file))(readFullPath(ph.resolve(ph.dirname(file), s)))))(path));
 const genFun = (template: QueryTemplate) => {
-    const temp=`{${ Object.entries(template.result).map(([k, v]) => {
+    const temp = `{${Object.entries(template.result).map(([k, v]) => {
         return `${k}:${typeof v === 'string' ? `'${v}'` : v}`
     }).join(',')}}`
     return `export const ${template.name}Query = QueryBuilder<${template.result.type}${template.result.multiple ? '[]' : ''},makers.${upperFirst(template.name)}SqlMakerParam>(makers.${template.maker},${temp},'${template.tag}');`

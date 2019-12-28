@@ -2,7 +2,7 @@ import { Observable, of, from } from "rxjs";
 import { Maker } from "./maker";
 import * as makers from './maker'
 import { first, curry } from 'lodash/fp'
-import { map } from "rxjs/operators";
+import { map, concatMap, catchError, toArray } from "rxjs/operators";
 export interface Querist {
     query: <R = any>(sql: string) => Promise<R>
 }
@@ -29,10 +29,14 @@ export interface QueryResultOption {
     auto: boolean
     pick?: string
     type: any
+    transaction: boolean
 }
-export const QueryComplie = <R = any>( option: QueryResultOption,list: R[]) => {
+export const QueryComplie = <R = any>(option: QueryResultOption, list: R[]) => {
     if (!list) return null;
     const result = option.multiple ? list : first(list);
+    if (option.transaction) {
+        return !!list.pop() === false
+    }
     if (typeof option.pick === 'string' && option.pick.length > 0) {
         const tmp = result[option.pick]
         if (!tmp) return null;
@@ -50,11 +54,23 @@ export const QueryComplie = <R = any>( option: QueryResultOption,list: R[]) => {
     return result;
 }
 type Query<R, P = any> = (params: P) => Observable<R>
+const query = (querist: Querist, option: QueryResultOption, sql: string) => {
+    if (option.transaction) {
+        return from(sql.split(";")).pipe(
+            concatMap((_sql) => querist.query(_sql)),
+            catchError(_ => from(querist.query('rollback')).pipe(map(_ => false))),
+            toArray()
+        )
+    } else {
+        return from(querist.query(sql))
+    }
+}
 export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, option?: QueryResultOption, baseName?: string) => {
     const handler = option ? curry(QueryComplie)(option) : (_: any) => _;
     return (param: P, queristName?: string): Observable<R> => {
         const name = queristName || baseName;
-        return (QueristMgr.has(name) ? from(QueristMgr.get(name).query((maker as any)(param))) : of(null)).pipe(map(handler))
+        return (QueristMgr.has(name) ? query(QueristMgr.get('name'), option, (maker as any)(param)) : of(null)).pipe(map(handler))
     };
 }
 /*{#template_included#}*/
+
