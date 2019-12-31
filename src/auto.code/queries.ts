@@ -65,11 +65,12 @@ const query = (querist: Querist, option: QueryResultOption, sql: string) => {
         return from(querist.query(sql))
     }
 }
-export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, option?: QueryResultOption, baseName?: string) => {
+export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, option?: QueryResultOption, baseName?: string | Querist) => {
     const handler = option ? curry(QueryComplie)(option) : (_: any) => _;
-    return (param: P, queristName?: string): Observable<R> => {
-        const name = queristName || baseName;
-        return (QueristMgr.has(name) ? query(QueristMgr.get(name), option, (maker as any)(param)) : of(null)).pipe(map(handler))
+    return (param: P, queristName?: string | Querist): Observable<R> => {
+        const tmp = queristName || baseName;
+        const q = typeof tmp === 'string' ? QueristMgr.get(tmp) : tmp
+        return (q ? query(q, option, (maker as any)(param)) : of(null)).pipe(map(handler))
     };
 }
 /*{#template_included#}*/
