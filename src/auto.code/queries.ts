@@ -73,5 +73,7 @@ export const QueryBuilder = <R = any, P = any>(maker: Maker<P>, option?: QueryRe
         return (q ? query(q, option, (maker as any)(param)) : of(null)).pipe(map(handler))
     };
 }
-/*{#template_included#}*/
 
+export const syncQuery = QueryBuilder<any[],makers.SyncSqlMakerParam>(makers.syncSqlMaker,{auto:false,multiple:true,pick:null,type:'any',transaction:false},'bigdata');
+export const syncCountQuery = QueryBuilder<any,makers.SyncCountSqlMakerParam>(makers.syncCountSqlMaker,{auto:false,multiple:false,pick:'count',type:'any',transaction:false},'default');
+export const syncTestQuery = QueryBuilder<any[],makers.SyncTestSqlMakerParam>(makers.syncTestSqlMaker,{auto:false,multiple:true,pick:null,type:'any',transaction:false},'default');

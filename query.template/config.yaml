@@ -7,7 +7,7 @@ templates:
       any: true
       auto: false
   - name: syncCount
-    template: SELECT count(0) count FROM {table} WHERE {version_field} >= '{version_value}'
+    template: SELECT count(0) count FROM {table} WHERE {version_field} >= '{version_value:number}'
     result:
       multiple: false
       pick: count
